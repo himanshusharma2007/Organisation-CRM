@@ -22,7 +22,9 @@ const DevsList = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+//  useEffect(()=>{
 
+//  })
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -67,6 +69,7 @@ const DevsList = () => {
           user._id === selectedUser._id ? { ...user, ...updatedUser } : user
         )
       );
+      fetchUsers();
       setIsEditModalOpen(false);
     } catch (error) {
       console.error("Error editing developer name:", error);
