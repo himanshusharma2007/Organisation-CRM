@@ -5,10 +5,12 @@ import {
   deleteUserTodo,
 } from "../../services/adminService";
 import { useParams } from "react-router-dom";
+import Modal from "../UI/Modal";
 
 const DevTodos = () => {
   const [todos, setTodos] = useState([]);
-  const [editingTodo, setEditingTodo] = useState(null);
+  const [selectedTodo, setSelectedTodo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -24,15 +26,18 @@ const DevTodos = () => {
     }
   };
 
-  const handleEdit = (todo) => {
-    setEditingTodo(todo);
+  const handleView = (todo) => {
+    setSelectedTodo(todo);
+    setIsModalOpen(true);
   };
 
-  const handleSave = async (id, updatedTodo) => {
+  const handleSave = async (updatedTodo) => {
     try {
-      await editUserTodo(id, updatedTodo);
-      setEditingTodo(null);
-      setTodos(todos.map((todo) => (todo._id === id ? updatedTodo : todo)));
+      await editUserTodo(updatedTodo._id, updatedTodo);
+      setTodos(
+        todos.map((todo) => (todo._id === updatedTodo._id ? updatedTodo : todo))
+      );
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error updating todo:", error);
     }
@@ -45,6 +50,14 @@ const DevTodos = () => {
     } catch (error) {
       console.error("Error deleting todo:", error);
     }
+  };
+
+  const truncateText = (text, maxWords) => {
+    const words = text.split(" ");
+    if (words.length > maxWords) {
+      return words.slice(0, maxWords).join(" ") + "...";
+    }
+    return text;
   };
 
   return (
@@ -72,59 +85,22 @@ const DevTodos = () => {
                 {todos.map((todo) => (
                   <tr key={todo._id} className="border-b border-gray-700">
                     <td className="py-3 px-4">
-                      {editingTodo && editingTodo._id === todo._id ? (
-                        <input
-                          type="text"
-                          value={editingTodo.title}
-                          onChange={(e) =>
-                            setEditingTodo({
-                              ...editingTodo,
-                              title: e.target.value,
-                            })
-                          }
-                          className="bg-gray-700 text-white px-2 py-1 rounded"
-                        />
-                      ) : (
-                        todo.title
-                      )}
+                      {truncateText(todo.title, 10)}
                     </td>
                     <td className="py-3 px-4">
-                      {editingTodo && editingTodo._id === todo._id ? (
-                        <input
-                          type="text"
-                          value={editingTodo.description}
-                          onChange={(e) =>
-                            setEditingTodo({
-                              ...editingTodo,
-                              description: e.target.value,
-                            })
-                          }
-                          className="bg-gray-700 text-white px-2 py-1 rounded"
-                        />
-                      ) : (
-                        todo.description
-                      )}
+                      {truncateText(todo.description, 10)}
                     </td>
                     <td className="py-3 px-4">
                       {new Date(todo.createdAt).toLocaleString()}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex space-x-2">
-                        {editingTodo && editingTodo._id === todo._id ? (
-                          <button
-                            onClick={() => handleSave(todo._id, editingTodo)}
-                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded transition duration-200"
-                          >
-                            Save
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleEdit(todo)}
-                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded transition duration-200"
-                          >
-                            Edit
-                          </button>
-                        )}
+                        <button
+                          onClick={() => handleView(todo)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition duration-200"
+                        >
+                          View
+                        </button>
                         <button
                           onClick={() => handleDelete(todo._id)}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-200"
@@ -140,6 +116,64 @@ const DevTodos = () => {
           </div>
         </>
       )}
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="View/Edit Todo"
+      >
+        {selectedTodo && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSave(selectedTodo);
+            }}
+          >
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1" htmlFor="title">
+                Title
+              </label>
+              <input
+                type="text"
+                id="title"
+                value={selectedTodo.title}
+                onChange={(e) =>
+                  setSelectedTodo({ ...selectedTodo, title: e.target.value })
+                }
+                className="w-full bg-gray-700 text-white px-3 py-2 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-sm font-medium mb-1"
+                htmlFor="description"
+              >
+                Description
+              </label>
+              <textarea
+                id="description"
+                value={selectedTodo.description}
+                onChange={(e) =>
+                  setSelectedTodo({
+                    ...selectedTodo,
+                    description: e.target.value,
+                  })
+                }
+                className="w-full bg-gray-700 text-white px-3 py-2 rounded"
+                rows="4"
+              ></textarea>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-200"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   );
 };

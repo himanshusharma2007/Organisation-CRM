@@ -34,7 +34,7 @@ const TodoList = ({ todos, onEdit, onDelete, onView }) => {
     );
   };
   return (
-    <ul className="space-y-4 max-h-64 overflow-auto">
+    <ul className="space-y-4 max-h-40 overflow-auto ">
       {todos &&
         todos.map((todo) => (
           <TodoItem

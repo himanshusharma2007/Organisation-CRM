@@ -27,6 +27,7 @@ const AddTodoForm = ({ onAdd }) => {
       <Input
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+        className="resize-none overflow-auto"
         placeholder="Add  description..."
         textarea
       />
