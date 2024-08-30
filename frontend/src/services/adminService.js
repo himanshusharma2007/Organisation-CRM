@@ -23,7 +23,7 @@ export const getAllUsers = async () => {
 };
 
 export const editUserTodo = (id, updatedTodo) => {
-  return api.put(`${API_URL}/user-todo/edit/${id}`, updatedTodo);
+  return api.post(`${API_URL}/user-todo/edit/${id}`, updatedTodo);
 };
 
 export const deleteUserTodo = (id) => {

@@ -5,9 +5,22 @@ exports.getAllUserTodos = async (req, res) => {
   try {
     console.log("getAllUserTodos called")
     const {id}=req.params;
-    const todos = await Todo.find({user:id}).populate("user");
-    res.status(200).json(todos);
+    console.log('id :>> ', id);
+   const todos = await Todo.find({ user: id });
+  console.log('todos :>> ', todos);
+    // Check if todos array is empty
+    if (todos.length === 0) {
+      console.log("check")
+      return res.status(204).json({});
+    }
+
+    // If todos exist, then populate the user field
+    const populatedTodos = await Todo.populate(todos, { path: "user" });
+
+    console.log('todos :>> ', populatedTodos);
+    res.status(200).json(populatedTodos);
   } catch (error) {
+    console.log('error.message :>> ', error.message);
     res
       .status(500)
       .json({ message: "Error fetching todos", error: error.message });
@@ -58,7 +71,7 @@ exports.deleteUserTodo = async (req, res) => {
     if (!deletedTodo) {
       return res.status(404).json({ message: "Todo not found" });
     }
-
+   console.log('todo deleted  :>> ');
     res.status(200).json({ message: "Todo deleted successfully" });
   } catch (error) {
     res
