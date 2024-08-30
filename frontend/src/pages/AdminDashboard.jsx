@@ -17,8 +17,8 @@ const AdminDashboard = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-900 text-white">
-      <aside className="w-64 bg-gray-800 p-6">
+    <div className="flex min-h-screen  text-white w-screen">
+      <aside className="w-[30%] bg-gray-800 p-6">
         <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
         <ul>
           <li className="mb-4">
@@ -31,7 +31,7 @@ const AdminDashboard = ({ children }) => {
           {/* Add more navigation items here */}
         </ul>
       </aside>
-      <div className="flex-1 p-10">{children}</div>
+      <div className="w-full p-10">{children}</div>
     </div>
   );
 };

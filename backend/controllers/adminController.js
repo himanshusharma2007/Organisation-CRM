@@ -79,3 +79,50 @@ exports.deleteUserTodo = async (req, res) => {
       .json({ message: "Error deleting todo", error: error.message });
   }
 };
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Delete all todos associated with the user
+    await Todo.deleteMany({ user: id });
+
+    // Delete the user
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "User and associated todos deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting User", error: error.message });
+  }
+};
+
+exports.editUserName = async (req, res) => {
+  try {
+    console.log("edit user name called")
+    const { id } = req.params;
+    const { firstName, lastName } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { firstName, lastName },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating User name", error: error.message });
+  }
+};

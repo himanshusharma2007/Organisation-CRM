@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { getAllUsers } from "../../services/adminService";
+import {
+  getAllUsers,
+  deleteDeveloper,
+  editDeveloperName,
+} from "../../services/adminService";
+import Modal from "../UI/Modal";
 
 const DevsList = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editedName, setEditedName] = useState({ firstName: "", lastName: "" });
 
   const { saveDev } = useAuth();
 
@@ -24,6 +33,44 @@ const DevsList = () => {
       setError("Failed to fetch users. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (user) => {
+    setSelectedUser(user);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleEditClick = (user) => {
+    setSelectedUser(user);
+    setEditedName({ firstName: user.firstName, lastName: user.lastName });
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteDeveloper(selectedUser._id);
+      setUsers(users.filter((user) => user._id !== selectedUser._id));
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting developer:", error);
+      setError("Failed to delete developer. Please try again.");
+    }
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    try {
+      const updatedUser = await editDeveloperName(selectedUser._id, editedName);
+      setUsers(
+        users.map((user) =>
+          user._id === selectedUser._id ? { ...user, ...updatedUser } : user
+        )
+      );
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Error editing developer name:", error);
+      setError("Failed to edit developer name. Please try again.");
     }
   };
 
@@ -46,35 +93,132 @@ const DevsList = () => {
     );
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 w-full">
       <h2 className="text-2xl font-bold mb-6">Developers List</h2>
       {users.length === 0 ? (
         <div className="text-gray-400">No users found.</div>
       ) : (
-        <div className="flex flex-col w-full gap-4">
+        <div className="flex gap-4 flex-col flex-grow">
           {users.map((user, index) => (
-            <Link
-              to={`/admin/user/${user._id}`}
+            <div
               key={user._id}
-              className="block"
+              className="flex justify-between items-center w-full bg-gray-800 rounded-lg p-4"
             >
-              <button
-                onClick={() => saveDev(user)}
-                className="w-full text-left p-4 bg-gray-800 hover:bg-gray-700 rounded-lg transition duration-200"
-              >
-                <div className="flex items-center">
-                  <span className="text-2xl font-bold mr-4 text-blue-500">
-                    {index + 1}
-                  </span>
-                  <span className="text-lg">
-                    {user.firstName} {user.lastName}
-                  </span>
-                </div>
-              </button>
-            </Link>
+              <div className="wraper flex space-x-2 items-center">
+                <div className="text-blue-500 text-2xl">{index + 1}</div>
+                <h3 className="text-xl font-semibold">
+                  {user.firstName} {user.lastName}
+                </h3>
+              </div>
+              <div className="flex items-center space-x-2 mt-4">
+                <Link
+                  to={`/admin/user/${user._id}`}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition duration-200"
+                >
+                  <button onClick={() => saveDev(user)}>View Todos</button>
+                </Link>
+                <button
+                  onClick={() => handleEditClick(user)}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded transition duration-200"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(user)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-200"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       )}
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Confirm Delete"
+      >
+        <p>
+          Are you sure you want to delete this developer and all associated
+          todos?
+        </p>
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={() => setIsDeleteModalOpen(false)}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="Edit Developer Name"
+      >
+        <form onSubmit={handleEdit}>
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium mb-1"
+              htmlFor="firstName"
+            >
+              First Name
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              value={editedName.firstName}
+              onChange={(e) =>
+                setEditedName({ ...editedName, firstName: e.target.value })
+              }
+              className="w-full bg-gray-700 text-white px-3 py-2 rounded"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium mb-1"
+              htmlFor="lastName"
+            >
+              Last Name
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              value={editedName.lastName}
+              onChange={(e) =>
+                setEditedName({ ...editedName, lastName: e.target.value })
+              }
+              className="w-full bg-gray-700 text-white px-3 py-2 rounded"
+              required
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setIsEditModalOpen(false)}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

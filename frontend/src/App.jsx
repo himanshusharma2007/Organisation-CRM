@@ -18,7 +18,7 @@ const App = () => {
     <AuthProvider>
       <Router>
         <div className="flex flex-col justify-center items-center min-h-screen bg-gray-900 text-white">
-          <main className="flex w-full rounded-md mx-auto ">
+          <main className="flex w-full rounded-md   ">
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />

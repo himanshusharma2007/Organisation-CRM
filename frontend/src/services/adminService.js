@@ -29,3 +29,12 @@ export const editUserTodo = (id, updatedTodo) => {
 export const deleteUserTodo = (id) => {
   return api.get(`${API_URL}/user-todo/delete/${id}`);
 };
+export const deleteDeveloper = (id) => {
+  return api.get(`${API_URL}/user/delete/${id}`);
+};
+
+export const editDeveloperName =async (id, updatedName) => {
+  const response= await  api.post(`/admin/user/edit/${id}`, updatedName);
+  console.log('response :>> ', response);
+  return response;
+};
