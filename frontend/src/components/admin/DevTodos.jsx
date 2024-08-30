@@ -10,10 +10,10 @@ const DevTodos = () => {
   const [todos, setTodos] = useState([]);
   const [editingTodo, setEditingTodo] = useState(null);
   const { id } = useParams();
-  console.log("id :>> ", id);
+
   useEffect(() => {
     fetchTodos(id);
-  }, []);
+  }, [id]);
 
   const fetchTodos = async (id) => {
     try {
@@ -24,7 +24,7 @@ const DevTodos = () => {
     }
   };
 
-  const handleEdit = async (todo) => {
+  const handleEdit = (todo) => {
     setEditingTodo(todo);
   };
 
@@ -32,7 +32,7 @@ const DevTodos = () => {
     try {
       await editUserTodo(id, updatedTodo);
       setEditingTodo(null);
-     setTodos(todos.map((todo) => (todo._id === id ? updatedTodo : todo)));
+      setTodos(todos.map((todo) => (todo._id === id ? updatedTodo : todo)));
     } catch (error) {
       console.error("Error updating todo:", error);
     }
@@ -42,94 +42,102 @@ const DevTodos = () => {
     try {
       await deleteUserTodo(id);
       setTodos(todos.filter((todo) => todo._id !== id));
-    //   fetchTodos();
     } catch (error) {
       console.error("Error deleting todo:", error);
     }
   };
 
   return (
-    <div>
-      {todos.length == 0 ? (
-        <div>no todo saved yet by this developer </div>
+    <div className="container mx-auto px-4">
+      {todos.length === 0 ? (
+        <div className="text-center py-10 text-gray-400">
+          No todos saved yet by this developer
+        </div>
       ) : (
         <>
-          <div>
-            {" "}
-            <span>
-              {todos[0].user.firstName} {todos[0].user.lastName}
-            </span>
-          </div>
-
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b">Title</th>
-                <th className="py-2 px-4 border-b">Description</th>
-                <th className="py-2 px-4 border-b">created At</th>
-                <th className="py-2 px-4 border-b">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {todos.map((todo) => (
-                <tr key={todo._id}>
-                  <td className="py-2 px-4 border-b">
-                    {editingTodo && editingTodo._id === todo._id ? (
-                      <input
-                        type="text"
-                        value={editingTodo.title}
-                        onChange={(e) =>
-                          setEditingTodo({
-                            ...editingTodo,
-                            title: e.target.value,
-                          })
-                        }
-                      />
-                    ) : (
-                      todo.title
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {editingTodo && editingTodo._id === todo._id ? (
-                      <input
-                        type="text"
-                        value={editingTodo.description}
-                        onChange={(e) =>
-                          setEditingTodo({
-                            ...editingTodo,
-                            description: e.target.value,
-                          })
-                        }
-                      />
-                    ) : (
-                      todo.description
-                    )}
-                  </td>
-                  <td className="py-2 px-4 border-b">{todo.createdAt}</td>
-                  <td className="flex space-x-2 py-2 px-4 border-b">
-                    {editingTodo && editingTodo._id === todo._id ? (
-                      <button onClick={() => handleSave(todo._id, editingTodo)}>
-                        Save
-                      </button>
-                    ) : (
-                      <button
-                        className="px-2 py-1  rounded-lg text-white  bg-yellow-500 text-md "
-                        onClick={() => handleEdit(todo)}
-                      >
-                        Edit
-                      </button>
-                    )}
-                    <button
-                      className="px-2 py-1 rounded-lg text-white  bg-red-500 text-md "
-                      onClick={() => handleDelete(todo._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+          <h2 className="text-2xl font-bold mb-6">
+            Todos for {todos[0].user.firstName} {todos[0].user.lastName}
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-gray-800 rounded-lg overflow-hidden">
+              <thead className="bg-gray-700">
+                <tr>
+                  <th className="py-3 px-4 text-left">Title</th>
+                  <th className="py-3 px-4 text-left">Description</th>
+                  <th className="py-3 px-4 text-left">Created At</th>
+                  <th className="py-3 px-4 text-left">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {todos.map((todo) => (
+                  <tr key={todo._id} className="border-b border-gray-700">
+                    <td className="py-3 px-4">
+                      {editingTodo && editingTodo._id === todo._id ? (
+                        <input
+                          type="text"
+                          value={editingTodo.title}
+                          onChange={(e) =>
+                            setEditingTodo({
+                              ...editingTodo,
+                              title: e.target.value,
+                            })
+                          }
+                          className="bg-gray-700 text-white px-2 py-1 rounded"
+                        />
+                      ) : (
+                        todo.title
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {editingTodo && editingTodo._id === todo._id ? (
+                        <input
+                          type="text"
+                          value={editingTodo.description}
+                          onChange={(e) =>
+                            setEditingTodo({
+                              ...editingTodo,
+                              description: e.target.value,
+                            })
+                          }
+                          className="bg-gray-700 text-white px-2 py-1 rounded"
+                        />
+                      ) : (
+                        todo.description
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {new Date(todo.createdAt).toLocaleString()}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex space-x-2">
+                        {editingTodo && editingTodo._id === todo._id ? (
+                          <button
+                            onClick={() => handleSave(todo._id, editingTodo)}
+                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded transition duration-200"
+                          >
+                            Save
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleEdit(todo)}
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded transition duration-200"
+                          >
+                            Edit
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(todo._id)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition duration-200"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </div>

@@ -1,33 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { getAdmin } from "../services/adminService";
+import { Link } from "react-router-dom";
 
 const AdminDashboard = ({ children }) => {
-   useEffect(() => {
-     const loadAdmin = async () => {
-       try {
-         const AdminData = await getAdmin();
-         console.log("AdminData :>> ", AdminData);
-       } catch (error) {
-         console.error("Failed to load Admin:", error);
-       } finally {
-       }
-     };
+  useEffect(() => {
+    const loadAdmin = async () => {
+      try {
+        const AdminData = await getAdmin();
+        console.log("AdminData :>> ", AdminData);
+      } catch (error) {
+        console.error("Failed to load Admin:", error);
+      }
+    };
 
-     loadAdmin();
-   }, []);
+    loadAdmin();
+  }, []);
+
   return (
-    <div className="flex justify-start  p-4 min-w-full min-h-screen">
-      <aside className="w-[30%]">
+    <div className="flex min-h-screen bg-gray-900 text-white">
+      <aside className="w-64 bg-gray-800 p-6">
+        <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
         <ul>
-          <li className="text-xl px-4 py-2 bg-zinc-800 text-white">
-            Developers Todos
+          <li className="mb-4">
+            <Link to="/admin/users">
+              <div className="text-gray-300 hover:text-white transition duration-200">
+                Developers Todos
+              </div>
+            </Link>
           </li>
+          {/* Add more navigation items here */}
         </ul>
       </aside>
-      <div className="wraper flex-grow bg-white text-black">
-        <h1>Admin Dashboard</h1>
-        {children}
-      </div>
+      <div className="flex-1 p-10">{children}</div>
     </div>
   );
 };
