@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 exports.adminOnly = async (req, res, next) => {
   try {
     const user = await User.findById(res.user.id);
-
+    console.log("user :>> ", user);
     if (user.role !== "admin") {
       return res.status(403).json({ message: "Access denied. Admin only." });
     }

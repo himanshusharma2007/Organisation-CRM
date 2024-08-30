@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const authRouter = require("./routes/authRouter");
 const todoRouter = require("./routes/todoRouter");
+const adminRouter = require("./routes/adminRoute");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -11,12 +12,13 @@ app.use(cookieParser());
 dotenv.config();
 app.use(
   cors({
-    origin: "http://localhost:5174",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 app.use("/api/auth", authRouter);
 app.use("/api/todo", todoRouter);
+app.use("/api/admin", adminRouter);
 
 
 app.listen(3001, () => {

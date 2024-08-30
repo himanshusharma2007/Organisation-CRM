@@ -1,3 +1,4 @@
+import axios from "axios";
 import api from "./api";
 
 export const login = async (email, password) => {
@@ -15,9 +16,16 @@ export const logout = async () => {
 
 };
 export const getUser = async () => {
- const response= await api.get("/auth/getuser");
- return response.data;
-
+  try {
+    const response = await axios.get("/api/user", { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      // User is not authenticated
+      return null;
+    }
+    throw error; // Rethrow other errors
+  }
 };
 
 

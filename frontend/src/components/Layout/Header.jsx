@@ -3,7 +3,7 @@ import { logout } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const Header = ({ isAdmin }) => {
+const Header = () => {
   const navigate = useNavigate();
   const handleLogout = async () => {
     await logout();
@@ -14,15 +14,14 @@ const Header = ({ isAdmin }) => {
     <div className="flex px-2 h-[12vh] w-full justify-between items-center space-x-3 ">
       <h1 className="text-xl text-white">Welcome {user?.firstName}</h1>
       <div className="wraper flex space-x-3">
-        {user?.role === "admin" && (
-          <button
-            onClick={handleLogout}
-            className=" bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+        {user && user.role === "admin" && (
+          <Link
+            to="/admin"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
           >
-            DashBoard
-          </button>
+            Open Dashboard
+          </Link>
         )}
-
         <button
           onClick={handleLogout}
           className=" bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"

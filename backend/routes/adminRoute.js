@@ -5,13 +5,14 @@ const {
   editUserTodo,
   deleteUserTodo,
 } = require("../controllers/adminController");
-const { protectRoute, adminOnly } = require("../middleware");
+const  protectRoute  = require("../middleware/protectRoute");
+const { adminOnly } = require("../middleware/protectAdminRotute");
 
 router.use(protectRoute);
 router.use(adminOnly);
 
 router.get("/todos", getAllUserTodos);
-router.put("/todos/:id", editUserTodo);
+router.post("/todos/:id", editUserTodo);
 router.delete("/todos/:id", deleteUserTodo);
 
 module.exports = router;

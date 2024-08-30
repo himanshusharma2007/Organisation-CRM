@@ -12,14 +12,16 @@ import { logout } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import ViewTodoModal from "../components/Todo/ViewTodoModal";
 import Header from "../components/Layout/Header";
+import { useAuth } from "../context/AuthContext";
 
-const TodosPage = ({ isAdmin }) => {
+const TodosPage = () => {
   const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingTodo, setEditingTodo] = useState(null);
   const [viewTodo, setViewTodo] = useState(null);
+  // const {user}=useAuth();
   useEffect(() => {
     fetchTodos();
   }, []);
@@ -76,7 +78,7 @@ const TodosPage = ({ isAdmin }) => {
 
   return (
     <div className="flex flex-col  items-center w-full min-h-screen ">
-      <Header isAdmin={isAdmin} />
+      <Header />
       <div className="relative w-[60vw] mt-40">
         <h1 className="text-3xl font-bold mb-6">Todo-Lists</h1>
         <AddTodoForm onAdd={handleAddTodo} />
@@ -97,6 +99,7 @@ const TodosPage = ({ isAdmin }) => {
           onClose={() => setViewTodo(null)}
           todo={viewTodo}
         />
+       
       </div>
     </div>
   );

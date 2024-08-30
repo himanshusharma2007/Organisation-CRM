@@ -3,7 +3,7 @@ import {
   getAllUserTodos,
   editUserTodo,
   deleteUserTodo,
-} from "../services/adminService";
+} from "../../services/adminService";
 
 const AdminDashboard = () => {
   const [todos, setTodos] = useState([]);
@@ -47,7 +47,15 @@ const AdminDashboard = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+     
+      <aside>
+        <ul>
+          <li className="text-xl px-4 py-2 bg-zinc-800 text-white">Developers Todos</li>
+        </ul>
+      </aside>
+      <div className="wraper">
+        
+      </div>
       <table className="min-w-full bg-white">
         <thead>
           <tr>

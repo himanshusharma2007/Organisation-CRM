@@ -8,10 +8,9 @@ import {
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import TodosPage from "./pages/TodosPage";
-import AdminDashboard from "./components/AdminDashboard";
+import AdminDashboard from "./components/admin/AdminDashboard";
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminRoute from "./components/AdminRoute";
+
 
 const App = () => {
   return (
@@ -22,22 +21,8 @@ const App = () => {
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
-              <Route
-                path="/todo"
-                element={
-                  <ProtectedRoute>
-                    <TodosPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <AdminDashboard />
-                  </AdminRoute>
-                }
-              />
+              <Route path="/todo" element={<TodosPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/" element={<Navigate to="/todo" replace />} />
             </Routes>
           </main>
