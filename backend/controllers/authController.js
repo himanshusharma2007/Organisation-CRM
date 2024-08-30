@@ -65,6 +65,7 @@ module.exports.logoutUser = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   try {
+    // console.log("get user called ")
    let user=res.user;
    res.status(200).send(user);
   } catch (error) {

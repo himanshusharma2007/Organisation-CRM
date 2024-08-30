@@ -8,9 +8,10 @@ import {
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import TodosPage from "./pages/TodosPage";
-import AdminDashboard from "./components/admin/AdminDashboard";
 import { AuthProvider } from "./context/AuthContext";
-
+import DevsList from './components/admin/DevsList'
+import DevTodos from "./components/admin/DevTodos";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const App = () => {
   return (
@@ -23,6 +24,22 @@ const App = () => {
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/todo" element={<TodosPage />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route
+                path="/admin/users"
+                element={
+                  <AdminDashboard>
+                    <DevsList />
+                  </AdminDashboard>
+                }
+              />
+              <Route
+                path="/admin/user/:id"
+                element={
+                  <AdminDashboard>
+                    <DevTodos />
+                  </AdminDashboard>
+                }
+              />
               <Route path="/" element={<Navigate to="/todo" replace />} />
             </Routes>
           </main>

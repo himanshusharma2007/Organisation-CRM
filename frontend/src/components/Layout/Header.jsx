@@ -1,6 +1,6 @@
 import React from "react";
 import { logout } from "../../services/authService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
@@ -10,13 +10,14 @@ const Header = () => {
     navigate("/login");
   };
   const { user } = useAuth();
+  console.log('user :>> ', user);
   return (
     <div className="flex px-2 h-[12vh] w-full justify-between items-center space-x-3 ">
       <h1 className="text-xl text-white">Welcome {user?.firstName}</h1>
       <div className="wraper flex space-x-3">
         {user && user.role === "admin" && (
           <Link
-            to="/admin"
+            to="/admin/users"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
           >
             Open Dashboard

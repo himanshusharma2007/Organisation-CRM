@@ -3,12 +3,26 @@ const User = require("../models/userModel");
 
 exports.getAllUserTodos = async (req, res) => {
   try {
-    const todos = await Todo.find().populate("user", "userName email");
+    console.log("getAllUserTodos called")
+    const {id}=req.params;
+    const todos = await Todo.find({user:id}).populate("user");
     res.status(200).json(todos);
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error fetching todos", error: error.message });
+  }
+};
+exports.getAllUsers = async (req, res) => {
+  try {
+    console.log("getAllUser called")
+    const users = await User.find();
+    console.log('users :>> ', users);
+    res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching users", error: error.message });
   }
 };
 
@@ -38,7 +52,7 @@ exports.editUserTodo = async (req, res) => {
 exports.deleteUserTodo = async (req, res) => {
   try {
     const { id } = req.params;
-
+    console.log('id  in delete todo:>> ', id);
     const deletedTodo = await Todo.findByIdAndDelete(id);
 
     if (!deletedTodo) {

@@ -6,11 +6,12 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [selectedDev, setSelectedDev] = useState(null);
   useEffect(() => {
     const loadUser = async () => {
       try {
         const userData = await getUser();
+        console.log('userData :>> ', userData);
         setUser(userData);
       } catch (error) {
         console.error('Failed to load user:', error);
@@ -25,13 +26,16 @@ export const AuthProvider = ({ children }) => {
   const saveUser = (userData) => {
     setUser(userData);
   };
+  const saveDev = (DevData) => {
+    setSelectedDev(DevData);
+  };
 
   const logout = () => {
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, saveUser, logout, loading }}>
+    <AuthContext.Provider value={{ user, saveUser, logout, loading, saveDev }}>
       {children}
     </AuthContext.Provider>
   );

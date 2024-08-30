@@ -19,7 +19,10 @@ app.use(
 app.use("/api/auth", authRouter);
 app.use("/api/todo", todoRouter);
 app.use("/api/admin", adminRouter);
-
+// app.get("/api/admin", (req, res) => {
+//   console.log("admin route called :>> ");
+//   res.send("admin route");
+// });
 
 app.listen(3001, () => {
   connectMongoDB();
