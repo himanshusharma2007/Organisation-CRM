@@ -11,8 +11,8 @@ const {
 const  protectRoute  = require("../middleware/protectRoute");
 const { adminOnly } = require("../middleware/protectAdminRotute");
 
-// router.use(protectRoute);
-// router.use(adminOnly);
+router.use(protectRoute);
+router.use(adminOnly);
 
 router.get("/", (req,res)=>{
   console.log("admin route called")

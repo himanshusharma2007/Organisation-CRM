@@ -16,6 +16,7 @@ export const logout = async () => {
 export const getUser = async () => {
   try {
     const response = await api.get("/auth/getuser");
+    
     console.log("response :>> ", response);
     return response.data;
   } catch (error) {

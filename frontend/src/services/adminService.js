@@ -29,6 +29,7 @@ export const editUserTodo = (id, updatedTodo) => {
 export const deleteUserTodo = (id) => {
   return api.get(`${API_URL}/user-todo/delete/${id}`);
 };
+
 export const deleteDeveloper = (id) => {
   return api.get(`${API_URL}/user/delete/${id}`);
 };

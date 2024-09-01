@@ -3,6 +3,7 @@ const app = express();
 const authRouter = require("./routes/authRouter");
 const todoRouter = require("./routes/todoRouter");
 const adminRouter = require("./routes/adminRoute");
+const projectRouter = require("./routes/projectRouter");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -19,6 +20,7 @@ app.use(
 app.use("/api/auth", authRouter);
 app.use("/api/todo", todoRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/projects", projectRouter);
 // app.get("/api/admin", (req, res) => {
 //   console.log("admin route called :>> ");
 //   res.send("admin route");
