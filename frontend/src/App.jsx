@@ -6,15 +6,15 @@ import {
   Navigate,
 } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import Layout from "./components/Layout";
+import Layout from "./components/Layout/Layout";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import TodosPage from "./pages/TodosPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage";
 import AdminDashboard from "./pages/AdminDashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-
+import DevsList from "./components/admin/DevsList";
+import DevTodos from "./components/admin/DevTodos";
 const App = () => {
   return (
     <AuthProvider>
@@ -25,51 +25,54 @@ const App = () => {
           <Route
             path="/"
             element={
-              <ProtectedRoute>
-                <Layout>
-                  <Navigate to="/todo" replace />
-                </Layout>
-              </ProtectedRoute>
+              <Layout>
+                <Navigate to="/todo" replace />
+              </Layout>
             }
           />
           <Route
             path="/todo"
             element={
-              <ProtectedRoute>
-                <Layout>
-                  <TodosPage />
-                </Layout>
-              </ProtectedRoute>
+              <Layout>
+                <TodosPage />
+              </Layout>
             }
           />
           <Route
             path="/projects"
             element={
-              <ProtectedRoute>
-                <Layout>
-                  <ProjectsPage />
-                </Layout>
-              </ProtectedRoute>
+              <Layout>
+                <ProjectsPage />
+              </Layout>
             }
           />
           <Route
             path="/projects/:id"
             element={
-              <ProtectedRoute>
-                <Layout>
-                  <ProjectDetailsPage />
-                </Layout>
-              </ProtectedRoute>
+              <Layout>
+                <ProjectDetailsPage />
+              </Layout>
+            }
+          />
+          <Route path="/admin" element={<Navigate to="/admin/users" />} />
+          <Route
+            path="/admin/users"
+            element={
+              <Layout>
+                <AdminDashboard>
+                  <DevsList />
+                </AdminDashboard>
+              </Layout>
             }
           />
           <Route
-            path="/admin"
+            path="/admin/user/:id"
             element={
-              <ProtectedRoute adminOnly>
-                <Layout>
-                  <AdminDashboard />
-                </Layout>
-              </ProtectedRoute>
+              <Layout>
+                <AdminDashboard>
+                  <DevTodos />
+                </AdminDashboard>
+              </Layout>
             }
           />
         </Routes>

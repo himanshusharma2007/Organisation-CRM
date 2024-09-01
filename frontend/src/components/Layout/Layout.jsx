@@ -20,8 +20,9 @@ import {
   FaFolderOpen,
   FaSignOutAlt,
 } from "react-icons/fa"; // Dashboard, Todos, Projects, Logout icons
-import { useAuth } from "../context/AuthContext"; // Assuming you have an AuthContext
+import { useAuth } from "../../context/AuthContext"; // Assuming you have an AuthContext
 import { logout } from "../../services/authService";
+
 const Layout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user } = useAuth();
@@ -47,15 +48,26 @@ const Layout = ({ children }) => {
   };
 
   const drawerContent = (
-    <>
+    <div className="flex flex-col h-full">
       <List>
         {user?.role === "admin" && (
           <ListItem
             button
             onClick={() => handleNavigation("/admin")}
-            selected={location.pathname === "/admin"}
+            selected={
+              location.pathname === "/admin" ||
+              location.pathname === "/admin/users" ||
+              location.pathname === "/admin/user/:id"
+            }
+            className={`cursor-pointer ${
+              location.pathname === "/admin" ||
+              location.pathname === "/admin/users" ||
+              location.pathname === "/admin/user/:id"
+                ? "bg-blue-500 text-white"
+                : "hover:bg-gray-100"
+            }`}
           >
-            <ListItemIcon>
+            <ListItemIcon className="text-inherit">
               <FaTachometerAlt />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
@@ -65,8 +77,13 @@ const Layout = ({ children }) => {
           button
           onClick={() => handleNavigation("/todo")}
           selected={location.pathname === "/todo"}
+          className={`cursor-pointer ${
+            location.pathname === "/todo"
+              ? "bg-blue-500 text-white"
+              : "hover:bg-gray-100"
+          }`}
         >
-          <ListItemIcon>
+          <ListItemIcon className="text-inherit">
             <FaClipboardList />
           </ListItemIcon>
           <ListItemText primary="Todos" />
@@ -75,43 +92,53 @@ const Layout = ({ children }) => {
           button
           onClick={() => handleNavigation("/projects")}
           selected={location.pathname === "/projects"}
+          className={`cursor-pointer ${
+            location.pathname === "/projects"
+              ? "bg-blue-500 text-white"
+              : "hover:bg-gray-100"
+          }`}
         >
-          <ListItemIcon>
+          <ListItemIcon className="text-inherit">
             <FaFolderOpen />
           </ListItemIcon>
           <ListItemText primary="Projects" />
         </ListItem>
       </List>
-      <List style={{ marginTop: "auto" }}>
-        <ListItem button onClick={handleLogout}>
-          <ListItemIcon>
+      <List className="mt-auto">
+        <ListItem
+          button
+          onClick={handleLogout}
+          className="cursor-pointer hover:bg-gray-100"
+        >
+          <ListItemIcon className="text-inherit">
             <FaSignOutAlt />
           </ListItemIcon>
           <ListItemText primary="Logout" />
         </ListItem>
       </List>
-    </>
+    </div>
   );
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div className="flex min-h-screen">
       <AppBar
         position="fixed"
+        className="z-50 bg-blue-600 "
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
-        <Toolbar>
+        <Toolbar className="flex justify-between">
           {isMobile && (
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
+              className="mr-2"
             >
               <FiMenu />
             </IconButton>
           )}
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" className="text-center flex-grow">
             Team Task Manager
           </Typography>
         </Toolbar>
@@ -135,9 +162,7 @@ const Layout = ({ children }) => {
         <Toolbar />
         {drawerContent}
       </Drawer>
-      <main style={{ flexGrow: 1, padding: theme.spacing(3), marginTop: 64 }}>
-        {children}
-      </main>
+      <main className="flex-grow p-6 mt-16  md:pl-[240px] ">{children}</main>
     </div>
   );
 };

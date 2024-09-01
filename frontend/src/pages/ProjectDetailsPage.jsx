@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { useAuth } from "../context/AuthContext";
-import projectService from "../services/projectService";
+import {
+  getProjectById,
+  updateProject,
+  deleteProject,
+} from "../services/projectService";
 
 const ProjectDetailsPage = () => {
   const [project, setProject] = useState(null);
@@ -22,7 +26,10 @@ const ProjectDetailsPage = () => {
     try {
       const data = await getProjectById(id);
       setProject(data);
-      setEditedProject(data);
+      setEditedProject({
+        ...data,
+        participantEmails: data.participants.map((p) => p.email).join(", "),
+      });
     } catch (error) {
       setError("Failed to fetch project details");
     } finally {
@@ -32,8 +39,20 @@ const ProjectDetailsPage = () => {
 
   const handleEditProject = async () => {
     try {
-      await updateProject(id, editedProject);
-      setProject(editedProject);
+      // Convert the comma-separated string into an array of emails
+      const participantEmailsArray = editedProject.participantEmails
+        .split(",")
+        .map((email) => email.trim()); // Trim any extra spaces
+
+      // Create a new object for the edited project with the updated participants array
+      const updatedProject = {
+        ...editedProject,
+        participants: participantEmailsArray.map((email) => ({ email })),
+      };
+
+      // Call the update function with the modified project data
+      await updateProject(id, updatedProject);
+      setProject(updatedProject);
       setOpenEditDialog(false);
       setError("Project updated successfully");
     } catch (error) {
@@ -100,8 +119,6 @@ const ProjectDetailsPage = () => {
           </button>
         </div>
       )}
-
-      `
       {openEditDialog && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen">
@@ -132,9 +149,7 @@ const ProjectDetailsPage = () => {
                 className="w-full border border-gray-300 p-2 rounded mb-4"
                 type="text"
                 placeholder="Participant Emails (comma-separated)"
-                value={editedProject.participants
-                  .map((p) => p.email)
-                  .join(", ")}
+                value={editedProject.participantEmails}
                 onChange={(e) =>
                   setEditedProject({
                     ...editedProject,
@@ -160,8 +175,6 @@ const ProjectDetailsPage = () => {
           </div>
         </div>
       )}
-
-      {/* Snackbar for displaying error or success messages */}
       {error && (
         <div className="fixed bottom-0 right-0 mb-4 mr-4">
           <div className={`bg-red-500 text-white p-4 rounded-lg`}>

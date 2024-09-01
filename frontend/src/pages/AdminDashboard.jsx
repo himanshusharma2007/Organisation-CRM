@@ -16,7 +16,7 @@ const AdminDashboard = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex min-h-screen  text-white w-screen">
+    <div className="flex min-h-full  text-white w-full">
   
       <div className="w-full p-10">{children}</div>
     </div>

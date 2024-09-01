@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import projectService from "../services/projectService";
+import {
+  getAllProjects,
+  getUserProjects,
+  createProject,
+} from "../services/projectService";
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -24,9 +28,9 @@ const ProjectsPage = () => {
   const fetchProjects = async () => {
     try {
       const data =
-        user.role === "admin"
-          ? await projectService.getAllProjects()
-          : await projectService.getUserProjects();
+        user?.role === "admin"
+          ? await getAllProjects()
+          : await getUserProjects();
       setProjects(data);
     } catch (error) {
       setError("Failed to fetch projects");
@@ -49,7 +53,7 @@ const ProjectsPage = () => {
 
   const handleCreateProject = async () => {
     try {
-      await projectService.createProject(newProject);
+      await createProject(newProject);
       setSuccessMessage("Project created successfully");
       handleCloseDialog();
       fetchProjects();
@@ -75,7 +79,7 @@ const ProjectsPage = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        {user.role === "admin" && (
+        {user?.role === "admin" && (
           <div className="ml-auto">
             <button
               onClick={handleOpenDialog}

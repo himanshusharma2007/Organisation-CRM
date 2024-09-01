@@ -16,16 +16,16 @@ export const getProjectById = async (id) => {
 };
 
 export const createProject = async (projectData) => {
-  const response = await api.post("/projects", projectData);
+  const response = await api.post("/projects/create-project", projectData);
   return response.data;
 };
 
 export const updateProject = async (id, projectData) => {
-  const response = await api.put(`/projects/${id}`, projectData);
+  const response = await api.post(`/projects/update-project/${id}`, projectData);
   return response.data;
 };
 
 export const deleteProject = async (id) => {
-  const response = await api.delete(`/projects/${id}`);
+  const response = await api.delete(`/projects/delete-project/${id}`);
   return response.data;
 };

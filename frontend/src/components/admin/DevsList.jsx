@@ -105,10 +105,10 @@ const DevsList = () => {
           {users.map((user, index) => (
             <div
               key={user._id}
-              className="flex justify-between items-center w-full bg-gray-800 rounded-lg p-4"
+              className="flex justify-between items-center w-full bg-blue-500 rounded-lg p-4"
             >
               <div className="wraper flex space-x-2 items-center">
-                <div className="text-blue-500 text-2xl">{index + 1}</div>
+                <div className="text-yellow-500 text-2xl">{index + 1}</div>
                 <h3 className="text-xl font-semibold">
                   {user.firstName} {user.lastName}
                 </h3>
@@ -116,7 +116,7 @@ const DevsList = () => {
               <div className="flex items-center space-x-2 mt-4">
                 <Link
                   to={`/admin/user/${user._id}`}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition duration-200"
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded transition duration-200"
                 >
                   <button onClick={() => saveDev(user)}>View Todos</button>
                 </Link>
@@ -150,7 +150,7 @@ const DevsList = () => {
         <div className="flex justify-end mt-4">
           <button
             onClick={() => setIsDeleteModalOpen(false)}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2"
           >
             Cancel
           </button>
@@ -183,7 +183,7 @@ const DevsList = () => {
               onChange={(e) =>
                 setEditedName({ ...editedName, firstName: e.target.value })
               }
-              className="w-full bg-gray-700 text-white px-3 py-2 rounded"
+              className="w-full  text-gray-700 px-3 py-2 rounded"
               required
             />
           </div>
@@ -201,7 +201,7 @@ const DevsList = () => {
               onChange={(e) =>
                 setEditedName({ ...editedName, lastName: e.target.value })
               }
-              className="w-full bg-gray-700 text-white px-3 py-2 rounded"
+              className="w-full text-gray-700  px-3 py-2 rounded"
               required
             />
           </div>
@@ -209,7 +209,7 @@ const DevsList = () => {
             <button
               type="button"
               onClick={() => setIsEditModalOpen(false)}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2"
             >
               Cancel
             </button>

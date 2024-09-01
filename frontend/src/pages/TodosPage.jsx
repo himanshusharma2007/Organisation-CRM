@@ -8,14 +8,9 @@ import {
 import AddTodoForm from "../components/Todo/AddTodoForm";
 import TodoList from "../components/Todo/TodoList";
 import EditTodoModal from "../components/Todo/EditTodoModal";
-import { logout } from "../services/authService";
-import { useNavigate } from "react-router-dom";
 import ViewTodoModal from "../components/Todo/ViewTodoModal";
-import Header from "../components/Layout/Header";
-import { useAuth } from "../context/AuthContext";
 
 const TodosPage = () => {
-  const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -77,8 +72,7 @@ const TodosPage = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="flex flex-col  items-center w-full min-h-screen ">
-      <Header />
+    <div className="flex flex-col  items-center w-full  ">
       <div className="relative w-[60vw] mt-10">
         <h1 className="text-3xl font-bold mb-6">Todo-Lists</h1>
         <AddTodoForm onAdd={handleAddTodo} />
