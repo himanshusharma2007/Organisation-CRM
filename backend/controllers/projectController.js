@@ -1,32 +1,128 @@
-const { projectModel } = require("../models/projectModel");
+const Project = require("../models/projectModel");
+const User = require("../models/userModel"); // Assuming you have a User model
 
 module.exports.getAllProjects = async (req, res) => {
-  const user = res.user;
   try {
-    if (user.role === "admin") {
-      const projects = await projectModel.find();
-      res.status(200).send(projects);
-    }
+    console.log("get all projects called");
+    const projects = await Project.find().populate(
+      "participants",
+      "firstName email"
+    );
+    res.status(200).json(projects);
   } catch (error) {
-    console.log("error in in get all projects :>> ", error.message);
-    res.status(400).send("unable to fetch projects");
+    res
+      .status(500)
+      .json({ message: "Error fetching projects", error: error.message });
   }
 };
 
-module.exports.createProjects = async (req, res) => {
+module.exports.getUserProjects = async (req, res) => {
   try {
-    const { title, discription, participantsEmails } = req.body;
-    let createdProject = await projectModel({
-      title,
-      discription,
-      participants,
-    }); participantsEmails.map(());
-    if (createdProject) {
-      res.status(200).send(createdProject);
-    }
-    res.status(400).send("unable to create projects");
+    console.log("get all user  projects called");
+
+    const projects = await Project.find({
+      participants: res.user._id,
+    }).populate("participants", "name email");
+    res.status(200).json(projects);
   } catch (error) {
-    console.log("error in in create projects :>> ", error.message);
-    res.status(400).send("unable to create projects");
+    res
+      .status(500)
+      .json({ message: "Error fetching user projects", error: error.message });
+  }
+};
+
+module.exports.getProjectById = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id).populate(
+      "participants",
+      "name email"
+    );
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+    res.status(200).json(project);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching project", error: error.message });
+  }
+};
+module.exports.createProject = async (req, res) => {
+  try {
+    console.log("create project called");
+    const { title, description, participantEmails } = req.body;
+    console.log("req.body :>> ", req.body);
+
+    // Find users by email
+    const participants = await User.find({ email: { $in: participantEmails } });
+
+    // Create a new instance of the Project model
+    const project = new Project({
+      title,
+      description,
+      participants: participants.map((user) => user._id),
+    });
+
+    // Save the project instance
+    await project.save();
+    console.log("project created successfully");
+    res.status(201).json(project);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating project", error: error.message });
+  }
+};
+
+
+module.exports.updateProject = async (req, res) => {
+  try {
+    console.log("updated project called");
+
+    const { title, description, participantEmails } = req.body;
+    console.log("req.body :>> ", req.body);
+
+    // Find users by email
+    const participants = await User.find({ email: { $in: participantEmails } });
+
+    const project = await Project.findByIdAndUpdate(
+      req.params.id,
+      {
+        title,
+        description,
+        participants: participants.map((user) => user._id),
+        updatedAt: Date.now(),
+      },
+      { new: true }
+    ).populate("participants", "name email");
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+    console.log("project updated successfully");
+
+    res.status(200).json(project);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating project", error: error.message });
+  }
+};
+
+module.exports.deleteProject = async (req, res) => {
+  try {
+    console.log("delete project called");
+
+    const project = await Project.findByIdAndDelete(req.params.id);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+    console.log("project deleted successfully ");
+
+    res.status(200).json({ message: "Project deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting project", error: error.message });
   }
 };

@@ -1,22 +1,25 @@
 const mongoose = require("mongoose");
 
-const projectSchema = mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    discription: {
-      type: String,
-      required: true,
-    },
-    participants: {
-      type:[mongoose.Schema.Types.ObjectId],
-      ref: "User",
-      required: true,
-    },
+const projectSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+    trim: true,
   },
-  { timestamp: true }
-);
+  description: {
+    type: String,
+    required: true,
+  },
+  participants: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 
-module.exports.projectModel=mongoose.model("Project",projectSchema)
+},{timestamps:true});
+
+
+const Project = mongoose.model("Project", projectSchema);
+
+module.exports = Project;
