@@ -7,13 +7,20 @@ import {
   updateProject,
   deleteProject,
 } from "../services/projectService";
+import EditTodoModal from "../components/Todo/EditTodoModal";
+import TodoList from "../components/Todo/TodoList";
+import ViewTodoModal from "../components/Todo/ViewTodoModal";
+import { deleteTodo, updateTodo } from "../services/todoService";
 
 const ProjectDetailsPage = () => {
   const [project, setProject] = useState(null);
+  const [projectTodos, setProjectTodos] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [editedProject, setEditedProject] = useState({});
+  const [editingTodo, setEditingTodo] = useState(null);
+  const [viewTodo, setViewTodo] = useState(null);
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -22,13 +29,44 @@ const ProjectDetailsPage = () => {
     fetchProjectDetails();
   }, [id]);
 
+  const handleEditTodo = (todoId) => {
+    const todoToEdit = projectTodos.find((todo) => todo._id === todoId);
+    setEditingTodo(todoToEdit);
+  };
+  const handleViewTodo = (todoId) => {
+    console.log("handleViewTodo called todoId :>> ", todoId);
+    setViewTodo(projectTodos.find((todo) => todo._id === todoId));
+  };
+
+  const handleUpdateTodo = async (todoId, todoData) => {
+    try {
+      const updatedTodo = await updateTodo(todoId, todoData);
+      setProjectTodos(projectTodos.map((todo) => (todo._id === todoId ? updatedTodo : todo)));
+    } catch (err) {
+      setError("Failed to update todo");
+      console.log('error in update todo :>> ', err);
+    }
+  };
+
+  const handleDeleteTodo = async (todoId) => {
+    try {
+      await deleteTodo(todoId);
+      setProjectTodos(projectTodos.filter((todo) => todo._id !== todoId));
+    } catch (err) {
+      setError("Failed to delete todo");
+    }
+  };
   const fetchProjectDetails = async () => {
     try {
       const data = await getProjectById(id);
-      setProject(data);
+      console.log('data in fetch from api:>> ', data);
+      setProject(data?.project);
+      setProjectTodos(data?.projectTodos);
       setEditedProject({
-        ...data,
-        participantEmails: data.participants.map((p) => p.email).join(", "),
+        ...data.project,
+        participantEmails: data.project.participants
+          .map((p) => p.email)
+          .join(", "),
       });
     } catch (error) {
       setError("Failed to fetch project details");
@@ -103,7 +141,24 @@ const ProjectDetailsPage = () => {
       <span className="inline-block bg-blue-500 text-white rounded-full px-3 py-1 text-sm font-semibold mb-4">
         {project.status || "In Progress"}
       </span>
-      {user.role === "admin" && (
+      <TodoList
+        todos={projectTodos}
+        onEdit={handleEditTodo}
+        onView={handleViewTodo}
+        onDelete={handleDeleteTodo}
+      />
+      <EditTodoModal
+        isOpen={!!editingTodo}
+        onClose={() => setEditingTodo(null)}
+        onSave={handleUpdateTodo}
+        todo={editingTodo}
+      />
+      <ViewTodoModal
+        isOpen={!!viewTodo}
+        onClose={() => setViewTodo(null)}
+        todo={viewTodo}
+      />
+      {user?.role === "admin" && (
         <div className="flex space-x-4 mt-6">
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"

@@ -17,9 +17,9 @@ const todoSchema = new mongoose.Schema(
       required: true,
     },
     project: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId ,
       ref: "Project",
-      default: null,
+      required: false,
     },
   },
   { timestamps: true }

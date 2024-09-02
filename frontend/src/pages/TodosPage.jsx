@@ -10,12 +10,17 @@ import TodoList from "../components/Todo/TodoList";
 import EditTodoModal from "../components/Todo/EditTodoModal";
 import ViewTodoModal from "../components/Todo/ViewTodoModal";
 
+import { getAllProjects, getUserProjects } from "../services/projectService";
+import { useAuth } from "../context/AuthContext";
+
 const TodosPage = () => {
   const [todos, setTodos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingTodo, setEditingTodo] = useState(null);
   const [viewTodo, setViewTodo] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const {user}=useAuth()
   // const {user}=useAuth();
   useEffect(() => {
     fetchTodos();
@@ -24,8 +29,16 @@ const TodosPage = () => {
   const fetchTodos = async () => {
     try {
       const fetchedTodos = await getAllTodos();
+       const data =
+         user?.role === "admin"
+           ? await getAllProjects()
+           : await getUserProjects();
+       setProjects(data);
       setTodos(fetchedTodos);
+      console.log('data :>> ', data);
+      console.log('fetchTodos :>> ', fetchTodos);
     } catch (err) {
+      console.log('err :>> ', err);
       setError("Failed to fetch todos");
     } finally {
       setIsLoading(false);
@@ -34,6 +47,7 @@ const TodosPage = () => {
 
   const handleAddTodo = async (todoData) => {
     try {
+     
       const newTodo = await createTodo(todoData);
       setTodos([newTodo, ...todos]);
     } catch (err) {
@@ -75,7 +89,7 @@ const TodosPage = () => {
     <div className="flex flex-col  items-center w-full  ">
       <div className=" w-[60vw] mt-10">
         <h1 className="text-3xl font-bold mb-6">Todo-Lists</h1>
-        <AddTodoForm onAdd={handleAddTodo} />
+        <AddTodoForm onAdd={handleAddTodo} projects={projects} />
         <TodoList
           todos={todos}
           onEdit={handleEditTodo}
@@ -93,7 +107,6 @@ const TodosPage = () => {
           onClose={() => setViewTodo(null)}
           todo={viewTodo}
         />
-       
       </div>
     </div>
   );

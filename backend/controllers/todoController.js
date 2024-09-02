@@ -1,10 +1,11 @@
+const Project = require("../models/projectModel");
 const todoModel = require("../models/todoModel");
 module.exports.allTodos = async (req, res) => {
   try {
     const user = res.user;
-     console.log(user);
+    console.log(user);
     const todos = await todoModel
-      .find({user: user._id })
+      .find({ user: user._id })
       .sort({ createdAt: -1 })
       .exec();
 
@@ -18,23 +19,37 @@ module.exports.allTodos = async (req, res) => {
     res.status(400).send("Error fetching todos. Please try again.");
   }
 };
+
 module.exports.createTodo = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    console.log("created todo called");
+    const { title, description, projectName } = req.body;
+    console.log("req.body :>> ", req.body);
     let user = res.user;
+    let allprojects=await Project.find();
+    console.log('allprojects :>> ', allprojects);
+    let project = await Project.findOne({
+      title: projectName,
+    });
+console.log('project :>> ', project);
+// if(!project){
+
+// }
     let newTodo = await todoModel.create({
       title,
       description,
       user: user._id,
+      project:project?._id,
     });
     if (newTodo) {
+      console.log('newTodo :>> ', newTodo);
       await newTodo.save();
       res.status(201).send(newTodo);
     } else {
       res.status(400).send("error in creating TODO.try again.");
     }
   } catch (error) {
-    console.log("error.message :>> ", error.message);
+    console.log("error.message :>> ", error);
     res.status(400).send("error in creating TODO.try again.");
   }
 };

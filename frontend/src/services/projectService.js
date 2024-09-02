@@ -12,6 +12,7 @@ export const getUserProjects = async () => {
 
 export const getProjectById = async (id) => {
   const response = await api.get(`/projects/${id}`);
+  console.log('response.data :>> ', response.data);
   return response.data;
 };
 

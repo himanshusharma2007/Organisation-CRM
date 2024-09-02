@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import Button from "../UI/Button";
 import Input from "../UI/Input";
 
-const AddTodoForm = ({ onAdd }) => {
+const AddTodoForm = ({ onAdd, projects }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [projectName, setProjectName] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (title.trim()) {
-      onAdd({ title, description });
+      onAdd({ title, description, projectName });
       setTitle("");
       setDescription("");
+      setProjectName(null);
     }
   };
 
@@ -28,9 +30,27 @@ const AddTodoForm = ({ onAdd }) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         className="resize-none overflow-auto"
-        placeholder="Add  description..."
+        placeholder="Add description..."
         textarea
       />
+
+      {projects.length > 0 && (
+        <select
+          value={projectName || ""}
+          onChange={(e) => setProjectName(e.target.value)}
+          className="p-2 border rounded bg-white text-gray-700"
+        >
+          <option value="" disabled>
+            Select a project
+          </option>
+          {projects.map((project) => (
+            <option key={project._id} value={project.title}>
+              {project.title}
+            </option>
+          ))}
+        </select>
+      )}
+
       <Button type="submit">Add Todo</Button>
     </form>
   );
