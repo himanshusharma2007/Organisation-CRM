@@ -48,8 +48,8 @@ const Layout = ({ children }) => {
   };
 
   const drawerContent = (
-    <div className="flex flex-col h-full">
-      <List>
+    <div className="flex flex-col justify-between h-full ">
+      <List className="">
         {user?.role === "admin" && (
           <ListItem
             button
@@ -63,7 +63,7 @@ const Layout = ({ children }) => {
               location.pathname === "/admin" ||
               location.pathname === "/admin/users" ||
               location.pathname === "/admin/user/:id"
-                ? "bg-blue-500 text-white"
+                ? "bg-blue-500 text-white hover:bg-blue-600 !important"
                 : "hover:bg-gray-100"
             }`}
           >
@@ -77,9 +77,9 @@ const Layout = ({ children }) => {
           button
           onClick={() => handleNavigation("/todo")}
           selected={location.pathname === "/todo"}
-          className={`cursor-pointer ${
+          className={`cursor-pointer hover:bg-blue-600 ${
             location.pathname === "/todo"
-              ? "bg-blue-500 text-white"
+              ? "bg-blue-500 text-white "
               : "hover:bg-gray-100"
           }`}
         >
@@ -94,7 +94,7 @@ const Layout = ({ children }) => {
           selected={location.pathname === "/projects"}
           className={`cursor-pointer ${
             location.pathname === "/projects"
-              ? "bg-blue-500 text-white"
+              ? " hover:bg-blue-600  bg-blue-500 text-white !important"
               : "hover:bg-gray-100"
           }`}
         >
@@ -104,11 +104,11 @@ const Layout = ({ children }) => {
           <ListItemText primary="Projects" />
         </ListItem>
       </List>
-      <List className="mt-auto">
+      <List className="mt-auto ">
         <ListItem
           button
           onClick={handleLogout}
-          className="cursor-pointer hover:bg-gray-100"
+          className="cursor-pointer hover:bg-blue-600"
         >
           <ListItemIcon className="text-inherit">
             <FaSignOutAlt />
@@ -123,7 +123,7 @@ const Layout = ({ children }) => {
     <div className="flex min-h-screen">
       <AppBar
         position="fixed"
-        className="z-50 bg-blue-600 "
+        className="z-10 bg-blue-600 "
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar className="flex justify-between">

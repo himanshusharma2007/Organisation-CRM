@@ -23,7 +23,7 @@ const LoginForm = ({ setIsAdmin }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 ">
+    <form onSubmit={handleSubmit} className="space-y-4 text-white min-w-96">
       <div>
         <label
           htmlFor="email"

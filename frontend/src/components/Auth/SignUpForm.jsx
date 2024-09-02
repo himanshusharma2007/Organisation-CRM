@@ -38,7 +38,7 @@ const SignupForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-2 text-white min-w-96">
       <Input
         label="First Name"
         name="firstName"
@@ -86,7 +86,9 @@ const SignupForm = () => {
       />
       {error && <p className="text-red-500">{error}</p>}
       <div className="wraper flex justify-center items-center">
-        <Button className="w-40" type="submit">Sign Up</Button>
+        <Button className="w-40" type="submit">
+          Sign Up
+        </Button>
       </div>
       <div className="flex">
         Already have an account?{" "}
