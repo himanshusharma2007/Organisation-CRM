@@ -18,6 +18,8 @@ const ProjectsPage = () => {
   });
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+   const [posterImage, setPosterImage] = useState(null);
+
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -36,7 +38,9 @@ const ProjectsPage = () => {
       setError("Failed to fetch projects");
     }
   };
-
+const handleFileChange = (event) => {
+  setPosterImage(event.target.files[0]);
+};
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -51,16 +55,24 @@ const ProjectsPage = () => {
     setNewProject({ title: "", description: "", participantEmails: "" });
   };
 
-  const handleCreateProject = async () => {
-    try {
-      await createProject(newProject);
-      setSuccessMessage("Project created successfully");
-      handleCloseDialog();
-      fetchProjects();
-    } catch (error) {
-      setError("Failed to create project");
-    }
-  };
+   const handleCreateProject = async () => {
+     try {
+       const formData = new FormData();
+       formData.append("title", newProject.title);
+       formData.append("description", newProject.description);
+       formData.append("participantEmails", newProject.participantEmails);
+       if (posterImage) {
+         formData.append("posterImage", posterImage);
+       }
+
+       await createProject(formData);
+       setSuccessMessage("Project created successfully");
+       handleCloseDialog();
+       fetchProjects();
+     } catch (error) {
+       setError("Failed to create project");
+     }
+   };
 
   const handleProjectClick = (id) => {
     navigate(`/projects/${id}`);
@@ -97,6 +109,14 @@ const ProjectsPage = () => {
             className="p-4 border border-gray-300 rounded shadow-sm cursor-pointer hover:shadow-lg transition-shadow duration-300"
             onClick={() => handleProjectClick(project._id)}
           >
+            {project.posterImage && (
+              <img
+                src={project.posterImage}
+                alt={project.title}
+                loading="lazy"
+                className="w-full h-48 object-cover mb-4 rounded"
+              />
+            )}
             <h2 className="text-xl font-semibold">{project.title}</h2>
             <p className="text-gray-600 mt-2">
               {project.description.substring(0, 100)}...
@@ -137,6 +157,12 @@ const ProjectsPage = () => {
                   participantEmails: e.target.value,
                 })
               }
+              className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
               className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div className="flex justify-end">

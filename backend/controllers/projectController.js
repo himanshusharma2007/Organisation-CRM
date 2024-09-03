@@ -1,7 +1,7 @@
 const Project = require("../models/projectModel");
 const Todo = require("../models/todoModel");
 const User = require("../models/userModel"); // Assuming you have a User model
-
+const upload = require("../utils/multerConfig");
 module.exports.getAllProjects = async (req, res) => {
   try {
     console.log("get all projects called");
@@ -25,7 +25,6 @@ module.exports.getProjectById = async (req, res) => {
       "name email"
     );
     const projectTodos = await Todo.find({ project: req.params.id });
-    console.log('projectTodos :>> ', project);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
@@ -52,64 +51,89 @@ module.exports.getUserProjects = async (req, res) => {
 };
 
 module.exports.createProject = async (req, res) => {
-  try {
-    console.log("create project called");
-    const { title, description, participantEmails } = req.body;
-    console.log("req.body :>> ", req.body);
+  upload.single("posterImage")(req, res, async (err) => {
+    if (err) {
+      return res
+        .status(400)
+        .json({ message: "Error uploading file", error: err.message });
+    }
+   try {
+     const { title, description, participantEmails } = req.body;
+     const participants = await User.find({
+       email: { $in: participantEmails },
+     });
 
-    // Find users by email
-    const participants = await User.find({ email: { $in: participantEmails } });
+     let posterImage = null;
+     if (req.file) {
+       posterImage = `data:${
+         req.file.mimetype
+       };base64,${req.file.buffer.toString("base64")}`;
+     }
 
-    // Create a new instance of the Project model
-    const project = new Project({
-      title,
-      description,
-      participants: participants.map((user) => user._id),
-    });
+     const project = new Project({
+       title,
+       description,
+       participants: participants.map((user) => user._id),
+       posterImage,
+     });
 
-    // Save the project instance
-    await project.save();
-    console.log("project created successfully");
-    res.status(201).json(project);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error creating project", error: error.message });
-  }
+     await project.save();
+     res.status(201).json(project);
+   } catch (error) {
+     res
+       .status(500)
+       .json({ message: "Error creating project", error: error.message });
+   }
+  });
 };
 
 module.exports.updateProject = async (req, res) => {
-  try {
-    console.log("updated project called");
+  upload.single("posterImage")(req, res, async (err) => {
+    if (err) {
+      return res
+        .status(400)
+        .json({ message: "Error uploading file", error: err.message });
+    }
 
-    const { title, description, participantEmails } = req.body;
-    console.log("req.body :>> ", req.body);
+    try {
+      const { title, description, participantEmails } = req.body;
 
-    // Find users by email
-    const participants = await User.find({ email: { $in: participantEmails } });
+      // Find users by email
+      const participants = await User.find({
+        email: { $in: participantEmails.split(",") },
+      });
 
-    const project = await Project.findByIdAndUpdate(
-      req.params.id,
-      {
+      let updateData = {
         title,
         description,
         participants: participants.map((user) => user._id),
         updatedAt: Date.now(),
-      },
-      { new: true }
-    ).populate("participants", "name email");
+      };
 
-    if (!project) {
-      return res.status(404).json({ message: "Project not found" });
+      // If a new poster image is uploaded, add it to the update data
+      if (req.file) {
+        updateData.posterImage = `data:${
+          req.file.mimetype
+        };base64,${req.file.buffer.toString("base64")}`;
+      }
+
+      const project = await Project.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        { new: true }
+      ).populate("participants", "name email");
+
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      res.status(200).json(project);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error updating project", error: error.message });
     }
-    console.log("project updated successfully");
-
-    res.status(200).json(project);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating project", error: error.message });
-  }
+  });
 };
 
 module.exports.deleteProject = async (req, res) => {

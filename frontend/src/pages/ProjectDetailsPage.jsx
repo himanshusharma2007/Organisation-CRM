@@ -20,6 +20,7 @@ const ProjectDetailsPage = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [editedProject, setEditedProject] = useState({});
   const [editingTodo, setEditingTodo] = useState(null);
+  const [newPosterImage, setNewPosterImage] = useState(null);
   const [viewTodo, setViewTodo] = useState(null);
   const { id } = useParams();
   const { user } = useAuth();
@@ -75,28 +76,26 @@ const ProjectDetailsPage = () => {
     }
   };
 
-  const handleEditProject = async () => {
-    try {
-      // Convert the comma-separated string into an array of emails
-      const participantEmailsArray = editedProject.participantEmails
-        .split(",")
-        .map((email) => email.trim()); // Trim any extra spaces
+ const handleEditProject = async () => {
+   try {
+     const formData = new FormData();
+     formData.append("title", editedProject.title);
+     formData.append("description", editedProject.description);
+     formData.append("participantEmails", editedProject.participantEmails);
 
-      // Create a new object for the edited project with the updated participants array
-      const updatedProject = {
-        ...editedProject,
-        participants: participantEmailsArray.map((email) => ({ email })),
-      };
+     if (newPosterImage) {
+       formData.append("posterImage", newPosterImage);
+     }
 
-      // Call the update function with the modified project data
-      await updateProject(id, updatedProject);
-      setProject(updatedProject);
-      setOpenEditDialog(false);
-      setError("Project updated successfully");
-    } catch (error) {
-      setError("Failed to update project");
-    }
-  };
+     const updatedProject = await updateProject(id, formData);
+     setProject(updatedProject);
+     setOpenEditDialog(false);
+     setError("Project updated successfully");
+     setNewPosterImage(null);
+   } catch (error) {
+     setError("Failed to update project");
+   }
+ };
 
   const handleDeleteProject = async () => {
     if (window.confirm("Are you sure you want to delete this project?")) {
@@ -108,7 +107,9 @@ const ProjectDetailsPage = () => {
       }
     }
   };
-
+  const handlePosterImageChange = (event) => {
+    setNewPosterImage(event.target.files[0]);
+  };
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -123,6 +124,17 @@ const ProjectDetailsPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <div className="w-full flex justify-center items-center">
+
+      <h1 className="text-xl font-bold text-center inline-block mb-5">Project Details</h1>
+      </div>
+      {project.posterImage && (
+        <img
+          src={project.posterImage}
+          alt={project.title}
+          className="w-full h-64 object-cover mb-6 rounded"
+        />
+      )}
       <h1 className="text-3xl font-bold mb-4">{project.title}</h1>
       <p className="mb-4">{project.description}</p>
       <p className="text-sm text-gray-600">
@@ -212,6 +224,36 @@ const ProjectDetailsPage = () => {
                   })
                 }
               />
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Current Poster Image
+                </label>
+                {project.posterImage && (
+                  <img
+                    src={project.posterImage}
+                    alt="Current poster"
+                    className="mt-2 w-full h-32 object-cover rounded"
+                  />
+                )}
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePosterImageChange}
+                className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {newPosterImage && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    New Poster Image Preview
+                  </label>
+                  <img
+                    src={URL.createObjectURL(newPosterImage)}
+                    alt="New poster preview"
+                    className="mt-2 w-full h-32 object-cover rounded"
+                  />
+                </div>
+              )}
               <div className="flex justify-end space-x-4">
                 <button
                   className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded"
