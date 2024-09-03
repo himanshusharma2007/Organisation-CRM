@@ -87,7 +87,7 @@ const TodosPage = () => {
 
   return (
     <div className="flex flex-col  items-center w-full  ">
-      <div className=" w-[60vw] mt-10">
+      <div className=" md:w-[60vw] mt-10">
         <h1 className="text-3xl font-bold mb-6">Todo-Lists</h1>
         <AddTodoForm onAdd={handleAddTodo} projects={projects} />
         <TodoList

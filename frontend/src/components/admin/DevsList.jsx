@@ -22,9 +22,7 @@ const DevsList = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
-//  useEffect(()=>{
 
-//  })
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -96,24 +94,24 @@ const DevsList = () => {
     );
 
   return (
-    <div className="container mx-auto px-4 w-full">
-      <h2 className="text-2xl font-bold mb-6">Developers List</h2>
+    <div className=" mx-auto  w-full ">
+      <h2 className="text-2xl font-bold mb-6 text-black">Developers List</h2>
       {users.length === 0 ? (
         <div className="text-gray-400">No users found.</div>
       ) : (
-        <div className="flex gap-4 flex-col flex-grow">
+        <div className="flex gap-4 flex-col flex-grow   min-w-64">
           {users.map((user, index) => (
             <div
               key={user._id}
-              className="flex justify-between items-center w-full bg-blue-500 rounded-lg p-4"
+              className="flex flex-col md:flex-row justify-between items-start md:items-center w-full bg-blue-500 rounded-lg p-4"
             >
-              <div className="wraper flex space-x-2 items-center">
+              <div className="flex  items-center space-x-3">
                 <div className="text-yellow-500 text-2xl">{index + 1}</div>
                 <h3 className="text-xl font-semibold">
                   {user.firstName} {user.lastName}
                 </h3>
               </div>
-              <div className="flex items-center space-x-2 mt-4">
+              <div className="flex items-center space-x-2 mt-4 md:mt-0">
                 <Link
                   to={`/admin/user/${user._id}`}
                   className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded transition duration-200"

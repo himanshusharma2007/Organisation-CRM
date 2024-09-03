@@ -26,23 +26,23 @@ module.exports.createTodo = async (req, res) => {
     const { title, description, projectName } = req.body;
     console.log("req.body :>> ", req.body);
     let user = res.user;
-    let allprojects=await Project.find();
-    console.log('allprojects :>> ', allprojects);
+    let allprojects = await Project.find();
+    console.log("allprojects :>> ", allprojects);
     let project = await Project.findOne({
       title: projectName,
     });
-console.log('project :>> ', project);
-// if(!project){
+    console.log("project :>> ", project);
+    // if(!project){
 
-// }
+    // }
     let newTodo = await todoModel.create({
       title,
       description,
       user: user._id,
-      project:project?._id,
+      project: project?._id,
     });
     if (newTodo) {
-      console.log('newTodo :>> ', newTodo);
+      console.log("newTodo :>> ", newTodo);
       await newTodo.save();
       res.status(201).send(newTodo);
     } else {

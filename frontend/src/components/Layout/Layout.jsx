@@ -29,7 +29,7 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -162,7 +162,7 @@ const Layout = ({ children }) => {
         <Toolbar />
         {drawerContent}
       </Drawer>
-      <main className="flex-grow p-6 mt-16  md:pl-[240px] ">{children}</main>
+      <main className="flex-grow p-2 md:p-6 mt-16  md:pl-[240px] ">{children}</main>
     </div>
   );
 };

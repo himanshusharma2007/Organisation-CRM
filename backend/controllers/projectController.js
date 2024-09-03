@@ -19,16 +19,18 @@ module.exports.getAllProjects = async (req, res) => {
 
 module.exports.getProjectById = async (req, res) => {
   try {
-    console.log("get project by id called")
+    console.log("get project by id called");
     const project = await Project.findById(req.params.id).populate(
       "participants",
       "name email"
     );
-    const projectTodos = await Todo.find({ project: req.params.id });
+    const projectTodos = await Todo.find({ project: req.params.id }).populate(
+      "user"
+    );
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
-    res.status(200).json({project, projectTodos});
+    res.status(200).json({ project, projectTodos });
   } catch (error) {
     res
       .status(500)
@@ -57,33 +59,35 @@ module.exports.createProject = async (req, res) => {
         .status(400)
         .json({ message: "Error uploading file", error: err.message });
     }
-   try {
-     const { title, description, participantEmails } = req.body;
-     const participants = await User.find({
-       email: { $in: participantEmails },
-     });
+    try {
+      const { title, description, participantEmails, status } = req.body;
+      console.log("req.body :>> ", req.body);
+      const participants = await User.find({
+        email: { $in: participantEmails },
+      });
 
-     let posterImage = null;
-     if (req.file) {
-       posterImage = `data:${
-         req.file.mimetype
-       };base64,${req.file.buffer.toString("base64")}`;
-     }
+      let posterImage = null;
+      if (req.file) {
+        posterImage = `data:${
+          req.file.mimetype
+        };base64,${req.file.buffer.toString("base64")}`;
+      }
 
-     const project = new Project({
-       title,
-       description,
-       participants: participants.map((user) => user._id),
-       posterImage,
-     });
+      const project = new Project({
+        title,
+        description,
+        participants: participants.map((user) => user._id),
+        posterImage,
+        status,
+      });
 
-     await project.save();
-     res.status(201).json(project);
-   } catch (error) {
-     res
-       .status(500)
-       .json({ message: "Error creating project", error: error.message });
-   }
+      await project.save();
+      res.status(201).json(project);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error creating project", error: error.message });
+    }
   });
 };
 
@@ -96,17 +100,18 @@ module.exports.updateProject = async (req, res) => {
     }
 
     try {
-      const { title, description, participantEmails } = req.body;
+      const { title, description, participantEmails, status } = req.body;
 
       // Find users by email
       const participants = await User.find({
         email: { $in: participantEmails.split(",") },
       });
-
+      console.log("req.body in update :>> ", req.body);
       let updateData = {
         title,
         description,
         participants: participants.map((user) => user._id),
+        status,
         updatedAt: Date.now(),
       };
 
