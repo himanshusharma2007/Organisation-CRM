@@ -5,8 +5,11 @@ const {
 } = require("../utils/generateTokenAndSetCookie.js");
 
 module.exports.signupUser = async (req, res) => {
-  const { firstName, lastName, userName, email, password } = req.body;
+  console.log("sign up user callled");
 
+  const { firstName, lastName, userName, email, password, department } =
+    req.body;
+  console.log("req.body", req.body);
   let userWithName = await userModel.findOne({ userName });
   let userWithEmail = await userModel.findOne({ email });
   if (userWithName) {
@@ -27,6 +30,7 @@ module.exports.signupUser = async (req, res) => {
       userName,
       email,
       password: hashedPswd,
+      department,
     });
     await createdUser.save();
     // const userObject = createdUser.toObject();
@@ -44,7 +48,7 @@ module.exports.loginUser = async (req, res) => {
     let user = await userModel.findOne({ email });
     let isPswdCorrect = await bcrypt.compare(password, user?.password || "");
     if (isPswdCorrect) {
-      generateTokenAndSetCookie({id:user._id}, res);
+      generateTokenAndSetCookie({ id: user._id }, res);
       res.status(200).send(user).selected(-password);
     } else {
       res.status(400).send("email or password is incorrect");
@@ -66,8 +70,8 @@ module.exports.logoutUser = (req, res) => {
 module.exports.getUser = (req, res) => {
   try {
     // console.log("get user called ")
-   let user=res.user;
-   res.status(200).send(user);
+    let user = res.user;
+    res.status(200).send(user);
   } catch (error) {
     console.log("error in get user :>> ", error.message);
   }

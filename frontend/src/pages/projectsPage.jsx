@@ -8,46 +8,47 @@ import {
 } from "../services/projectService";
 
 const ProjectsPage = () => {
-  const [projects, setProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [newProject, setNewProject] = useState({
     title: "",
     description: "",
     participantEmails: "",
+    status: "",
   });
-  const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-   const [posterImage, setPosterImage] = useState(null);
+  const [posterImage, setPosterImage] = useState(null);
 
-  const { user } = useAuth();
+  const {
+    user,
+    projects,
+    setProjects,
+    error,
+    setError,
+    loading,
+    fetchProjects,
+  } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    try {
-      const data =
-        user?.role === "admin"
-          ? await getAllProjects()
-          : await getUserProjects();
-      setProjects(data);
-    } catch (error) {
-      setError("Failed to fetch projects");
+    if (!loading && user) {
+      console.log("projects in projects page :>> ", projects);
     }
+  }, [projects, loading, user]);
+
+  const handleFileChange = (event) => {
+    setPosterImage(event.target.files[0]);
   };
-const handleFileChange = (event) => {
-  setPosterImage(event.target.files[0]);
-};
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredProjects = projects.filter((project) =>
-    project.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProjects = projects
+    ?.filter((project) =>
+      project.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by newest first
 
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => {
@@ -55,28 +56,34 @@ const handleFileChange = (event) => {
     setNewProject({ title: "", description: "", participantEmails: "" });
   };
 
-   const handleCreateProject = async () => {
-     try {
-       const formData = new FormData();
-       formData.append("title", newProject.title);
-       formData.append("description", newProject.description);
-       formData.append("participantEmails", newProject.participantEmails);
-       if (posterImage) {
-         formData.append("posterImage", posterImage);
-       }
+  const handleCreateProject = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("title", newProject.title);
+      formData.append("description", newProject.description);
+      formData.append("participantEmails", newProject.participantEmails);
+      formData.append("status", newProject.status);
 
-       await createProject(formData);
-       setSuccessMessage("Project created successfully");
-       handleCloseDialog();
-       fetchProjects();
-     } catch (error) {
-       setError("Failed to create project");
-     }
-   };
+      if (posterImage) {
+        formData.append("posterImage", posterImage);
+      }
+
+      await createProject(formData);
+      setSuccessMessage("Project created successfully");
+      handleCloseDialog();
+      fetchProjects();
+    } catch (error) {
+      setError("Failed to create project");
+    }
+  };
 
   const handleProjectClick = (id) => {
     navigate(`/projects/${id}`);
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-4">
@@ -103,7 +110,7 @@ const handleFileChange = (event) => {
         )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProjects.map((project) => (
+        {filteredProjects?.map((project) => (
           <div
             key={project._id}
             className="p-4 border border-gray-300 rounded shadow-sm cursor-pointer hover:shadow-lg transition-shadow duration-300"
@@ -121,6 +128,24 @@ const handleFileChange = (event) => {
             <p className="text-gray-600 mt-2">
               {project.description.substring(0, 100)}...
             </p>
+            <div className="text-sm text-gray-500 mt-2">
+              <p>
+                Status:{" "}
+                <span
+                  className={` font-bold ${
+                    project.status === "pending"
+                      ? "text-yellow-500"
+                      : "text-green-500"
+                  } `}
+                >
+                  {" "}
+                  {project.status}
+                </span>
+              </p>
+              <p>
+                Created At: {new Date(project.createdAt).toLocaleDateString()}
+              </p>
+            </div>
           </div>
         ))}
       </div>
@@ -159,6 +184,29 @@ const handleFileChange = (event) => {
               }
               className="w-full mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <div>
+              <label htmlFor=""></label>
+              <select
+                value={newProject.status}
+                onChange={(e) =>
+                  setNewProject({
+                    ...newProject,
+                    status: e.target.value,
+                  })
+                }
+                className="p-2 border rounded bg-white text-gray-700 w-full mb-4"
+              >
+                <option value="" disabled>
+                  --select project status--
+                </option>
+                <option name="status" value="pending">
+                  pending
+                </option>
+                <option name="status" value="completed">
+                  completed
+                </option>
+              </select>
+            </div>
             <input
               type="file"
               accept="image/*"

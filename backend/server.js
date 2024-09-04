@@ -4,6 +4,7 @@ const authRouter = require("./routes/authRouter");
 const todoRouter = require("./routes/todoRouter");
 const adminRouter = require("./routes/adminRoute");
 const projectRouter = require("./routes/projectRoute");
+const leadRouter = require("./routes/leadRouter");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -21,6 +22,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/todo", todoRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/projects", projectRouter);
+app.use("/api/leads", leadRouter);
 // app.get("/api/admin", (req, res) => {
 //   console.log("admin route called :>> ");
 //   res.send("admin route");
