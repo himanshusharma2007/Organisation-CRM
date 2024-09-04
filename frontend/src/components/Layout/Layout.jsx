@@ -73,6 +73,40 @@ const Layout = ({ children }) => {
             <ListItemText primary="Dashboard" />
           </ListItem>
         )}
+        {(user?.role === "admin" || user?.department === "sales") && (
+          <ListItem
+            button
+            onClick={() => handleNavigation("/leads")}
+            selected={location.pathname === "/leads"}
+            className={`cursor-pointer ${
+              location.pathname === "/leads"
+                ? "bg-blue-500 text-white hover:bg-blue-600 !important"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <ListItemIcon className="text-inherit">
+              <FaTachometerAlt />
+            </ListItemIcon>
+            <ListItemText primary="Lead Management" />
+          </ListItem>
+        )}
+        {(user?.role === "admin" || user?.department === "sales") && (
+          <ListItem
+            button
+            onClick={() => handleNavigation("/leads/user-leads")}
+            selected={location.pathname === "/leads/user-leads"}
+            className={`cursor-pointer ${
+              location.pathname === "/leads/user-leads"
+                ? "bg-blue-500 text-white hover:bg-blue-600 !important"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <ListItemIcon className="text-inherit">
+              <FaTachometerAlt />
+            </ListItemIcon>
+            <ListItemText primary="Assiged Leads" />
+          </ListItem>
+        )}
         <ListItem
           button
           onClick={() => handleNavigation("/todo")}
@@ -104,6 +138,7 @@ const Layout = ({ children }) => {
           <ListItemText primary="Projects" />
         </ListItem>
       </List>
+
       <List className="mt-auto ">
         <ListItem
           button

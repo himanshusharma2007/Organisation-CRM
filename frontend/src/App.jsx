@@ -15,6 +15,8 @@ import ProjectDetailsPage from "./pages/ProjectDetailsPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import DevsList from "./components/admin/DevsList";
 import DevTodos from "./components/admin/DevTodos";
+import LeadsPage from "./pages/LeadsPage";
+
 const App = () => {
   return (
     <AuthProvider>
@@ -72,6 +74,14 @@ const App = () => {
                 <AdminDashboard>
                   <DevTodos />
                 </AdminDashboard>
+              </Layout>
+            }
+          />
+          <Route
+            path="/leads"
+            element={
+              <Layout>
+                <LeadsPage />
               </Layout>
             }
           />
