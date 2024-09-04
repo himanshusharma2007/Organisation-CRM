@@ -82,19 +82,24 @@ exports.deleteLead = async (req, res) => {
 exports.getUserLeads = async (req, res) => {
   try {
     console.log("get user leads called");
-    let user = res.user;
+    let user = res.user; // Change `res.user` to `req.user`
     const leads = await Lead.find({ assignedTo: user._id }).populate(
-      "assignedTo"
-    );
+      "assignedTo",
+      "-password"
+    ); // Exclude the password field in populate
     console.log("leads :>> ", leads);
-    res.status(200).json(leads).selected(-assignedTo.password);
+    res.status(200).json(leads); // Correct response sending
   } catch (error) {
-     console.log("error in get user leads :>> ", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching user leads", error: error.message });
+    console.log("error in get user leads :>> ", error);
+    if (!res.headersSent) {
+      // Ensure the headers haven't been sent
+      res
+        .status(500)
+        .json({ message: "Error fetching user leads", error: error.message });
+    }
   }
 };
+
 
 exports.getLeadById = async (req, res) => {
   try {

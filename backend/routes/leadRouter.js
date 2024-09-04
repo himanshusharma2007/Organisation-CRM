@@ -16,8 +16,9 @@ router.use(adminOrSales);
 
 router.post("/", createLead);
 router.get("/", getLeads);
+router.get("/user-leads", getUserLeads); // Place this before the `/:id` route
+router.get("/lead-details/:id", getLeadById);
 router.post("/:id", updateLead);
 router.get("/:id", deleteLead);
-router.get("/user-leads", getUserLeads);
-router.get("/lead-details/:id", getLeadById);
+
 module.exports = router;
