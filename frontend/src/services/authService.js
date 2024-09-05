@@ -33,3 +33,8 @@ export const getAdmin = async () => {
   console.log(" get admin response.data :>> ", response.data);
   return response;
 };
+export const getSalesUsers = async () => {
+  const response = await api.get("/auth/getsales");
+  console.log(" get getSalesUsers response.data :>> ", response.data);
+  return response;
+};

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getAllLeads } from "../services/leadService";
+import CreateLeadModal from "../components/UI/CreateLeadModal";
 import {
   BarChart,
   Bar,
@@ -9,7 +10,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
+import { useAuth } from "../context/AuthContext";
 
 const Card = ({ children, className = "" }) => (
   <div className={`bg-white rounded-lg shadow-md ${className}`}>{children}</div>
@@ -27,14 +30,10 @@ const CardContent = ({ children, className = "" }) => (
 
 const LeadsPage = () => {
   const [leads, setLeads] = useState([]);
-  const [analytics, setAnalytics] = useState({
-    totalLeads: 0,
-    convertedLeads: 0,
-    lostLeads: 0,
-    uniqueCompanies: 0,
-  });
+  const [analytics, setAnalytics] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-
+  const { user } = useAuth();
   useEffect(() => {
     fetchLeads();
   }, []);
@@ -48,7 +47,17 @@ const LeadsPage = () => {
       console.error("Error fetching leads:", error);
     }
   };
+  const handleLeadCreated = () => {
+    fetchLeads(); // Refetch leads after a new one is created
+  };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   const calculateAnalytics = (fetchedLeads) => {
     const totalLeads = fetchedLeads.length;
     const convertedLeads = fetchedLeads.filter(
@@ -90,8 +99,19 @@ const LeadsPage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-blue-700">Lead Management</h1>
-
+      <div className="wraper flex w-full justify-between items-center">
+        <h1 className="text-3xl font-bold mb-6 text-blue-700">
+          Lead Management
+        </h1>
+        {(user?.role === "admin" || user?.department === "sales") && (
+          <button
+            onClick={openModal}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 text-xl rounded focus:outline-none focus:shadow-outline"
+          >
+            Create Lead
+          </button>
+        )}
+      </div>
       {/* Analytics Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card>
@@ -150,12 +170,24 @@ const LeadsPage = () => {
                 { status: "Lost", count: analytics.lostLeads },
                 { status: "Converted", count: analytics.convertedLeads },
               ]}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="status" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill="#3B82F6" />
+              <Bar
+                dataKey="count"
+                fill="#3B82F6"
+                barSize={window.innerWidth < 768 ? 50 : 30} // Responsive bar size
+              >
+                {/* Assign colors to bars based on the status */}
+                <Cell fill="#3B82F6" key="New" />
+                <Cell fill="#F59E0B" key="Contacted" />
+                <Cell fill="#10B981" key="Qualified" />
+                <Cell fill="#EF4444" key="Lost" />
+                <Cell fill="#8B5CF6" key="Converted" />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -164,34 +196,40 @@ const LeadsPage = () => {
       {/* Lead Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {leads.map((lead) => (
-          <Card
-            key={lead._id}
-            className="cursor-pointer hover:shadow-lg transition-shadow duration-300"
-            onClick={() => navigate(`/leads/${lead._id}`)}
-          >
-            <CardContent>
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-xl font-semibold text-blue-700">
-                  {lead.company}
-                </h3>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(
-                    lead.status
-                  )}`}
-                >
-                  {lead.status}
-                </span>
-              </div>
-              <p className="text-gray-600 mb-2">{lead.name}</p>
-              <p className="text-sm text-gray-500">
-                Created: {formatDate(lead.createdAt)}
-              </p>
-              <p className="text-sm text-gray-500">
-                Assigned to: {lead.assignedTo?.userName || "Unassigned"}
-              </p>
-            </CardContent>
-          </Card>
+          <Link to={`/leads/lead-details/${lead._id}`} key={lead._id}>
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300">
+              <CardContent>
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-xl font-semibold text-blue-700">
+                    {lead.company}
+                  </h3>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(
+                      lead.status
+                    )}`}
+                  >
+                    {lead.status}
+                  </span>
+                </div>
+                <p className="text-gray-600 mb-2">{lead.name}</p>
+                <p className="text-sm text-gray-500">
+                  Created: {formatDate(lead.createdAt)}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Assigned to: {lead.assignedTo?.userName || "Unassigned"}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
+        {/* Create Lead Modal */}
+        {isModalOpen && (
+          <CreateLeadModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onLeadCreated={handleLeadCreated}
+          />
+        )}
       </div>
     </div>
   );

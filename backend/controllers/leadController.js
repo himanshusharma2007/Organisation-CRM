@@ -45,23 +45,30 @@ exports.updateLead = async (req, res) => {
   try {
     console.log("update lead called");
     const { id } = req.params;
-    let updatedLead = await Lead.findOne({ _id: id });
-    updatedLead = req.body;
-    console.log("upated lead in update lead :>> ", updatedLead);
-    // await updatedLead.save();
-    console.log("lead updated successfully");
-    if (!updatedLead) {
+
+    // Find the lead by its ID
+    let lead = await Lead.findOne({ _id: id });
+
+    if (!lead) {
       return res.status(404).json({ message: "Lead not found" });
     }
-    res.status(200).json(updatedLead);
-  } catch (error) {
-    console.log("error in update lead:>> ", error);
 
+    // Update the lead with the new values from req.body
+    Object.assign(lead, req.body);
+
+    // Save the updated lead
+    await lead.save();
+
+    console.log("Lead updated successfully");
+    res.status(200).json(lead);
+  } catch (error) {
+    console.log("Error in update lead:>> ", error);
     res
       .status(400)
       .json({ message: "Error updating lead", error: error.message });
   }
 };
+
 
 exports.deleteLead = async (req, res) => {
   try {
@@ -105,9 +112,12 @@ exports.getLeadById = async (req, res) => {
   try {
     const { id } = req.params;
     console.log("get lead by id called", id);
-    const lead = await Lead.findOne({ _id: id }).populate("assignedTo");
+    const lead = await Lead.findOne({ _id: id }).populate(
+      "assignedTo",
+      "-password"
+    );
     console.log("lead inget lead by id:>> ", lead);
-    res.status(200).json(lead).selected(-assignedTo.password);
+    res.status(200).json(lead);
   } catch (error) {
     res
       .status(500)

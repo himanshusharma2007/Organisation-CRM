@@ -16,6 +16,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import DevsList from "./components/admin/DevsList";
 import DevTodos from "./components/admin/DevTodos";
 import LeadsPage from "./pages/LeadsPage";
+import AssignedLeadsPage from "./pages/AssignedLeadsPage";
+import LeadDetailsPage from "./pages/LeadDetailsPage";
 
 const App = () => {
   return (
@@ -82,6 +84,22 @@ const App = () => {
             element={
               <Layout>
                 <LeadsPage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/leads/:id"
+            element={
+              <Layout>
+                <AssignedLeadsPage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/leads/lead-details/:id"
+            element={
+              <Layout>
+                <LeadDetailsPage />
               </Layout>
             }
           />
